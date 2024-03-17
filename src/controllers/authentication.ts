@@ -2,7 +2,7 @@ import express from "express";
 
 import { getUserByEmail, createUser } from "../db/user";
 import { authentication, random } from "../helpers";
-
+import { RoleId } from "db/role";
 // LOGIN
 export const login = async (req: express.Request, res: express.Response) => {
   try {
@@ -58,14 +58,6 @@ export const login = async (req: express.Request, res: express.Response) => {
       domain: "localhost",
       path: "/",
     });
-    res.cookie(
-      "XAVIA-DATA",
-      { userId: user._id, role: user.role },
-      {
-        domain: "localhost",
-        path: "/",
-      },
-    );
     return res
       .status(200)
       .json({
@@ -86,21 +78,12 @@ export const login = async (req: express.Request, res: express.Response) => {
 // REGISTER
 export const register = async (req: express.Request, res: express.Response) => {
   try {
-    const { email, password, username, role } = req.body;
+    const { email, password, username } = req.body;
     if (!email || !password || !username) {
       return res.status(400).json({
         error: {
           status: "400",
           message: "Not found email or password",
-        },
-      });
-    }
-
-    if (!role) {
-      return res.status(400).json({
-        error: {
-          status: "400",
-          message: "Invalid role",
         },
       });
     }
@@ -117,6 +100,7 @@ export const register = async (req: express.Request, res: express.Response) => {
     }
     // EACH USER WILL HAVE A OWN SALT CODE
     const salt = random();
+    const role = RoleId.USER;
     const user = await createUser({
       email,
       username,
