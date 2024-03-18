@@ -26,6 +26,29 @@ export const getAllUsers = async (
   }
 };
 
+//GET DETAIL USER
+export const getDetailUser = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const user = await getUserById(id);
+    console.log("GET USER SUCCESS!!!");
+    return res.status(200).json({
+      data: user,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error: {
+        status: "400",
+        message: "Cannot get user",
+      },
+    });
+  }
+};
+
 //DELETE USER
 export const deleteUser = async (
   req: express.Request,

@@ -74,6 +74,37 @@ export const login = async (req: express.Request, res: express.Response) => {
     });
   }
 };
+//LOGOUT
+export const logout = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  try {
+    const sessionToken = req.cookies["XAVIA-AUTH"];
+    // CHECK IF THERE IS A SESSION TOKEN
+    if (!sessionToken) {
+      return res.status(403).json({
+        error: {
+          status: "403",
+          message: "Not Authenticated",
+        },
+      });
+    }
+    res.clearCookie("XAVIA-AUTH", { domain: "localhost", path: "/" });
+    return res.status(200).json({
+      isLogout: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: {
+        status: "500",
+        message: "Internal Server Error",
+      },
+    });
+  }
+};
 
 // REGISTER
 export const register = async (req: express.Request, res: express.Response) => {
@@ -83,7 +114,7 @@ export const register = async (req: express.Request, res: express.Response) => {
       return res.status(400).json({
         error: {
           status: "400",
-          message: "Not found email or password",
+          message: "Not found email, password or username",
         },
       });
     }
