@@ -29,7 +29,7 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(
   morgan(
-    ":method :url :status :res[content-length] - :response-time ms :user-agent",
+    ":remote-addr :method :url :status :res[content-length] - :response-time ms [:date[clf]]",
   ),
 );
 app.use("/", router());
