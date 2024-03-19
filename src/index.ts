@@ -4,6 +4,7 @@
 // COMPRESSION IS A MIDDLEWARE USED TO COMPRESS DATA BEFORE SENDING IT FROM THE SERVER TO THE CLIENT (CLIENT)
 // MIDDLEWARE CORS IS USED TO ENABLE CORS IN EXPRESS APPLICATIONS, ALLOWING REQUESTS FROM DIFFERENT ORIGINS TO BE ACCEPTED
 // MONGOOSE PROVIDES BASIC OPERATIONS SUCH AS SEARCH, ADD, UPDATE AND DELETE DOCUMENTS FROM MONGODB DATABASE.
+// MORGAN MIDDLEWARE FOR LOGGER METHOD
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -12,6 +13,7 @@ import cors from "cors";
 import http from "http";
 import mongoose from "mongoose";
 import router from "./router";
+var morgan = require("morgan");
 const app = express();
 require("dotenv").config();
 
@@ -25,6 +27,11 @@ const server = http.createServer(app);
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(
+  morgan(
+    ":method :url :status :res[content-length] - :response-time ms :user-agent",
+  ),
+);
 app.use("/", router());
 
 // CONNECT MONGODB
