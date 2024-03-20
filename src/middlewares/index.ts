@@ -14,8 +14,9 @@ export const isAuthenticated = async (
     // CHECK IF THERE IS A SESSION TOKEN
     if (!sessionToken) {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message: "Not Found SessionToken",
         },
       });
@@ -25,8 +26,9 @@ export const isAuthenticated = async (
 
     if (!existingUser) {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message: "Not Found User",
         },
       });
@@ -38,8 +40,9 @@ export const isAuthenticated = async (
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "403",
+        code: 403,
         message: "Error",
       },
     });
@@ -63,8 +66,9 @@ export const isAdminOrOwnerisOwner = async (
 
     if (!currentUserId) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Error",
         },
       });
@@ -72,8 +76,9 @@ export const isAdminOrOwnerisOwner = async (
 
     if (currentUserId.toString() !== id) {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message: "Not Authenticated",
         },
       });
@@ -83,8 +88,9 @@ export const isAdminOrOwnerisOwner = async (
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });
@@ -100,8 +106,9 @@ export const isAdmin = async (
     const currentUserRole = get(req, "identity.role") as Number;
     if (!currentUserRole) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Error",
         },
       });
@@ -110,8 +117,9 @@ export const isAdmin = async (
     if (+currentUserRole !== 1) {
       console.log("Not Admin");
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message:
             "You do not have permission to register for an admin account",
         },
@@ -122,8 +130,9 @@ export const isAdmin = async (
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });
@@ -141,8 +150,9 @@ export const isAdminOrOwner = async (
     const currentUserId = get(req, "identity._id") as string;
     if (!currentUserRole || !currentUserId) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Error",
         },
       });
@@ -151,8 +161,9 @@ export const isAdminOrOwner = async (
       next();
     } else {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message: "Not Authenticated",
         },
       });
@@ -160,8 +171,9 @@ export const isAdminOrOwner = async (
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });

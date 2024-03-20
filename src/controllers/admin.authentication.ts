@@ -12,9 +12,10 @@ export const registerAdmin = async (
     const { email, password, username } = req.body;
     if (!email || !password || !username) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
-          message: "Not found email or password",
+          code: 400,
+          message: "Not found emai, password or username",
         },
       });
     }
@@ -23,8 +24,9 @@ export const registerAdmin = async (
 
     if (existingUser) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Email already exists",
         },
       });
@@ -45,14 +47,16 @@ export const registerAdmin = async (
     return res
       .status(200)
       .json({
+        is_success: true,
         data: user,
       })
       .end();
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });

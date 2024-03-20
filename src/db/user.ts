@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 // USER CONFIG SCHEMA : MODEL
 // SELECT: FALSE MEANS THIS FIELD IS NOT RETURNED WHEN QUERYING THE DATABASE
+// SELECT: FALSE NGHĨA LÀ TRƯỜNG NÀY KHÔNG ĐƯỢC TRẢ LẠI KHI TRUY VẤN CƠ SỞ DỮ LIỆU
 // AUTHENTICATION CONTAINS INFORMATION ABOUT USER AUTHENTICATION
 const UserSchema = new mongoose.Schema({
   email: { type: String, required: true },

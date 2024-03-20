@@ -10,13 +10,15 @@ export const getAllRoles = async (
   try {
     const roles = await getRoles();
     return res.status(200).json({
+      is_success: true,
       data: roles,
       total: roles.length,
     });
   } catch (error) {
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot get all roles",
       },
     });
@@ -32,8 +34,9 @@ export const createRoles = async (
     const { codeDtl } = req.body;
     if (!codeDtl) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Not found codeDtl",
         },
       });
@@ -43,8 +46,9 @@ export const createRoles = async (
 
     if (existingRole) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Role already exists",
         },
       });
@@ -63,13 +67,15 @@ export const createRoles = async (
     return res
       .status(200)
       .json({
+        is_success: true,
         data: role,
       })
       .end();
   } catch (error) {
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });

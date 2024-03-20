@@ -12,8 +12,9 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     if (!email || !password) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Not found email or password",
         },
       });
@@ -25,8 +26,9 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     if (!user) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Wrong email or password",
         },
       });
@@ -38,8 +40,9 @@ export const login = async (req: express.Request, res: express.Response) => {
     // CHECK IF THE PASSWORD IS CORRECT
     if (user.authentication.password != expectedHash) {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Wrong password",
         },
       });
@@ -61,6 +64,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     return res
       .status(200)
       .json({
+        is_success: true,
         data: user,
       })
       .end();
@@ -68,7 +72,8 @@ export const login = async (req: express.Request, res: express.Response) => {
     console.log(error);
     return res.status(400).json({
       error: {
-        status: "400",
+        is_error: true,
+        code: 400,
         message: "Error",
       },
     });
@@ -85,21 +90,24 @@ export const logout = async (
     // CHECK IF THERE IS A SESSION TOKEN
     if (!sessionToken) {
       return res.status(403).json({
+        is_error: true,
         error: {
-          status: "403",
+          code: 403,
           message: "Not Authenticated",
         },
       });
     }
     res.clearCookie("XAVIA-AUTH", { domain: "localhost", path: "/" });
     return res.status(200).json({
+      is_success: true,
       isLogout: true,
       message: "Logout successful",
     });
   } catch (error) {
     return res.status(500).json({
+      is_error: true,
       error: {
-        status: "500",
+        code: 500,
         message: "Internal Server Error",
       },
     });
@@ -112,8 +120,9 @@ export const register = async (req: express.Request, res: express.Response) => {
     const { email, password, username } = req.body;
     if (!email || !password || !username) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Not found email, password or username",
         },
       });
@@ -123,8 +132,9 @@ export const register = async (req: express.Request, res: express.Response) => {
 
     if (existingUser) {
       return res.status(400).json({
+        is_error: true,
         error: {
-          status: "400",
+          code: 400,
           message: "Email already exists",
         },
       });
@@ -145,14 +155,16 @@ export const register = async (req: express.Request, res: express.Response) => {
     return res
       .status(200)
       .json({
+        is_success: true,
         data: user,
       })
       .end();
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Error",
       },
     });

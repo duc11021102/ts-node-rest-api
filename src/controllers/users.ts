@@ -14,15 +14,18 @@ export const getAllUsers = async (
 ) => {
   try {
     const users = await getUsers();
+    console.log(users);
     return res.status(200).json({
+      is_success: true,
       data: users,
       total: users.length,
     });
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot get all users",
       },
     });
@@ -39,12 +42,14 @@ export const getDetailUser = async (
     const { id } = req.params;
     const user = await getUserById(id);
     return res.status(200).json({
+      is_success: true,
       data: user,
     });
   } catch (error) {
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot get user",
       },
     });
@@ -59,14 +64,34 @@ export const getDetailUserBySessionToken = async (
 ) => {
   try {
     const { sessionToken } = req.body;
+    if (!sessionToken) {
+      return res.status(400).json({
+        is_error: true,
+        error: {
+          code: 400,
+          message: "Cannot found session token",
+        },
+      });
+    }
     const user = await getUserBySessionToken(sessionToken);
+    if (!user) {
+      return res.status(400).json({
+        is_error: true,
+        error: {
+          code: 400,
+          message: "Cannot found user",
+        },
+      });
+    }
     return res.status(200).json({
+      is_success: true,
       data: user,
     });
   } catch (error) {
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot get user",
       },
     });
@@ -86,8 +111,9 @@ export const deleteUser = async (
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot delete users",
       },
     });
@@ -104,7 +130,13 @@ export const updateUser = async (
     const { username, email } = req.body;
 
     if (!username || !email) {
-      return res.sendStatus(400);
+      return res.sendStatus(400).json({
+        is_error: true,
+        error: {
+          code: 400,
+          message: "Not found value data",
+        },
+      });
     }
 
     const user = await getUserById(id);
@@ -112,12 +144,19 @@ export const updateUser = async (
     user.username = username;
     user.email = email;
     await user.save();
-    return res.status(200).json(user).end();
+    return res
+      .status(200)
+      .json({
+        is_success: true,
+        data: user,
+      })
+      .end();
   } catch (error) {
     console.log(error);
     return res.status(400).json({
+      is_error: true,
       error: {
-        status: "400",
+        code: 400,
         message: "Cannot update user",
       },
     });

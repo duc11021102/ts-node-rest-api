@@ -14,6 +14,5 @@ export default (router: express.Router) => {
   router.get("/user/:id", isAuthenticated, isAdminOrOwner, getDetailUser);
   router.delete("/users/:id", isAuthenticated, isAdminOrOwner, deleteUser);
   router.patch("/users/:id", isAuthenticated, isAdminOrOwner, updateUser);
-  // GET DETAIL USER BY SESSION TOKEN
   router.get("/user", isAuthenticated, isAdmin, getDetailUserBySessionToken);
 };
