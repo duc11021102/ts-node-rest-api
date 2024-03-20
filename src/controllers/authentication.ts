@@ -19,10 +19,12 @@ export const login = async (req: express.Request, res: express.Response) => {
         },
       });
     }
-    // RETURN USER WITH ONLY 2 FIELDS authentication.salt AND authentication.password
+    // RETURN USER WITH 2 FIELDS authentication.salt AND authentication.password
+    // .select() sẽ trả về thêm 2 trường nữa là salt và password, mặc định thì 2 trường này không đc trả về
     const user = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password",
     );
+    console.log(user);
 
     if (!user) {
       return res.status(400).json({
