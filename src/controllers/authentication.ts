@@ -62,6 +62,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     res.cookie("XAVIA-AUTH", user.authentication.sessionToken, {
       domain: "localhost",
       path: "/",
+      expires: new Date(Date.now() + 86400000),
     });
     return res
       .status(200)
