@@ -52,7 +52,6 @@ export const registerAdmin = async (
       })
       .end();
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       is_error: true,
       error: {

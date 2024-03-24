@@ -14,14 +14,12 @@ export const getAllUsers = async (
 ) => {
   try {
     const users = await getUsers();
-    console.log(users);
     return res.status(200).json({
       is_success: true,
       data: users,
       total: users.length,
     });
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       is_error: true,
       error: {
@@ -109,7 +107,6 @@ export const deleteUser = async (
     const deletedUser = await deleteUserById(id);
     return res.json(deletedUser);
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       is_error: true,
       error: {
@@ -152,7 +149,6 @@ export const updateUser = async (
       })
       .end();
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       is_error: true,
       error: {

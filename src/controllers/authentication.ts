@@ -24,8 +24,6 @@ export const login = async (req: express.Request, res: express.Response) => {
     const user = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password",
     );
-    console.log(user);
-
     if (!user) {
       return res.status(400).json({
         is_error: true,
@@ -72,7 +70,6 @@ export const login = async (req: express.Request, res: express.Response) => {
       })
       .end();
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       error: {
         is_error: true,
@@ -163,7 +160,6 @@ export const register = async (req: express.Request, res: express.Response) => {
       })
       .end();
   } catch (error) {
-    console.log(error);
     return res.status(400).json({
       is_error: true,
       error: {
