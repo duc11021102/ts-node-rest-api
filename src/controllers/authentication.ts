@@ -1,7 +1,12 @@
 import express from "express";
 
 import { getUserByEmail, createUser } from "../db/user";
-import { authentication, random } from "../helpers";
+import {
+  authentication,
+  random,
+  getValidDomain,
+  clientHostName,
+} from "../helpers";
 import { RoleId } from "db/role";
 // LOGIN
 export const login = async (req: express.Request, res: express.Response) => {
@@ -19,6 +24,26 @@ export const login = async (req: express.Request, res: express.Response) => {
         },
       });
     }
+
+    // GET CLIENT DOMAIN FROM REQ
+    // const clientHost = clientHostName(req);
+    // // CHECK IF THE DOMAIN IS INVALID
+    // const validDomain = getValidDomain(clientHost);
+    // if (
+    //   validDomain === "" ||
+    //   validDomain === null ||
+    //   validDomain === undefined
+    // ) {
+    //   console.log(typeof validDomain);
+    //   return res.status(400).json({
+    //     error: {
+    //       is_error: true,
+    //       code: 400,
+    //       message: "Invalid hostname!!!",
+    //     },
+    //   });
+    // }
+
     // RETURN USER WITH 2 FIELDS authentication.salt AND authentication.password
     // .select() sẽ trả về thêm 2 trường nữa là salt và password, mặc định thì 2 trường này không đc trả về
     const user = await getUserByEmail(email).select(
@@ -56,9 +81,10 @@ export const login = async (req: express.Request, res: express.Response) => {
     );
     // SAVE UPDATED INFORMATION TO THE DATABASE
     await user.save();
+
     // THIS COOKIE MAY BE USED TO AUTHENTIZE THE USER IN SUBSEQUENT REQUESTS.
     res.cookie("XAVIA-AUTH", user.authentication.sessionToken, {
-      domain: "localhost",
+      domain: "",
       path: "/",
       expires: new Date(Date.now() + 86400000),
     });
@@ -79,6 +105,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     });
   }
 };
+
 //LOGOUT
 export const logout = async (
   req: express.Request,
@@ -97,7 +124,25 @@ export const logout = async (
         },
       });
     }
-    res.clearCookie("XAVIA-AUTH", { domain: "localhost", path: "/" });
+
+    // GET CLIENT DOMAIN FROM REQ
+    // const clientHost = clientHostName(req);
+    // // CHECK IF THE DOMAIN IS INVALID
+    // const validDomain = getValidDomain(clientHost);
+    // if (validDomain === "") {
+    //   return res.status(400).json({
+    //     error: {
+    //       is_error: true,
+    //       code: 400,
+    //       message: "Invalid hostname!!!",
+    //     },
+    //   });
+    // }
+
+    res.clearCookie("XAVIA-AUTH", {
+      domain: "",
+      path: "/",
+    });
     return res.status(200).json({
       is_success: true,
       isLogout: true,
@@ -127,6 +172,19 @@ export const register = async (req: express.Request, res: express.Response) => {
         },
       });
     }
+    // GET CLIENT DOMAIN FROM REQ
+    // const clientHost = clientHostName(req);
+    // // CHECK IF THE DOMAIN IS INVALID
+    // const validDomain = getValidDomain(clientHost);
+    // if (validDomain === "") {
+    //   return res.status(400).json({
+    //     error: {
+    //       is_error: true,
+    //       code: 400,
+    //       message: "Invalid hostname!!!",
+    //     },
+    //   });
+    // }
 
     const existingUser = await getUserByEmail(email);
 

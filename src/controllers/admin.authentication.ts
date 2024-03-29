@@ -1,7 +1,12 @@
 // CREATE REGISTER CONTROLLER FOR ADMIN
 import express from "express";
 import { getUserByEmail, createUser } from "../db/user";
-import { authentication, random } from "../helpers";
+import {
+  authentication,
+  random,
+  getValidDomain,
+  clientHostName,
+} from "../helpers";
 import { RoleId } from "db/role";
 //REGISTER
 export const registerAdmin = async (
@@ -19,6 +24,20 @@ export const registerAdmin = async (
         },
       });
     }
+
+    // GET CLIENT DOMAIN FROM REQ
+    // const clientHost = clientHostName(req);
+    // // CHECK IF THE DOMAIN IS INVALID
+    // const validDomain = getValidDomain(clientHost);
+    // if (validDomain === "") {
+    //   return res.status(400).json({
+    //     error: {
+    //       is_error: true,
+    //       code: 400,
+    //       message: "Invalid hostname!!!",
+    //     },
+    //   });
+    // }
 
     const existingUser = await getUserByEmail(email);
 
