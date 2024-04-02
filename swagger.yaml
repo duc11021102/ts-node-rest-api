@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: Swagger API - OpenAPI 3.0
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: apiteam@swagger.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://192.168.137.1:8080
+tags:
+  - name: Auth
+    description: API for auth
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: Login to system
+      operationId: login
+      requestBody:
+        description: Infomation for login
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: abc@gmail.com
+                password:
+                  type: string
+                  example: abc123
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  is_success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      authentication:
+                        type: object
+                        properties:
+                          password:
+                            type: string
+                            example: 5341fbb2316809cbd9e95cee86bdc10b3abfb0019490b1ae24d6639e8979b988
+                          salt:
+                            type: string
+                            example: EZjIlhos49wDiPC9bpSvZ9wPg0Bnjd9H32UP5gOqRTmP0lSfhtAsMoM3vZAmkb68
+                          sessionToken:
+                            type: string
+                            example: d9b108c22cbf9e6861b30f16da65653cb6f332cfd1c5dd9747d9ded691b55579
+                  _id:
+                    type: string
+                    example: 65f68d0e27ca65d411e13bd6
+                  email:
+                    type: string
+                    example: abc@gmail.com
+                  username:
+                    type: string
+                    example: abc
+                  role:
+                    type: number
+                    example: 0
+                  _v:
+                    type: number
+                    example: 0
+        "400":
+          description: Invalid input
+        "404":
+          description: Not found
+        "422":
+          description: Validation exception

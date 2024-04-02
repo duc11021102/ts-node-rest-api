@@ -5,6 +5,7 @@
 // MIDDLEWARE CORS IS USED TO ENABLE CORS IN EXPRESS APPLICATIONS, ALLOWING REQUESTS FROM DIFFERENT ORIGINS TO BE ACCEPTED
 // MONGOOSE PROVIDES BASIC OPERATIONS SUCH AS SEARCH, ADD, UPDATE AND DELETE DOCUMENTS FROM MONGODB DATABASE.
 // MORGAN MIDDLEWARE FOR LOGGER METHOD
+// SWAGGER FOR DOCUMENT API
 import express from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -13,26 +14,19 @@ import cors from "cors";
 import http from "http";
 import mongoose from "mongoose";
 import router from "./router";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yaml";
+import fs from "fs";
+import path from "path";
 var morgan = require("morgan");
-const app = express();
 require("dotenv").config();
-
-app.use(
-  cors({
-    credentials: true,
-  }),
-);
+//APP
+const app = express();
+//CONVERT YAML FILE
+const file = fs.readFileSync(path.resolve("swagger.yaml"), "utf8");
+const swaggerDocument = YAML.parse(file);
+//SERVE
 const server = http.createServer(app);
-
-app.use(compression());
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(
-  morgan(
-    ":remote-addr :method :url :status :res[content-length] - :response-time ms [:date[clf]]",
-  ),
-);
-app.use("/", router());
 
 // CONNECT MONGODB
 if (process.env.MONGO_URL && process.env.MONGO_PASSWORD) {
@@ -44,11 +38,31 @@ if (process.env.MONGO_URL && process.env.MONGO_PASSWORD) {
   mongoose.connect(db);
   mongoose.connection.on("error", (error: Error) => console.log(error));
 }
-
+// CONNECT SERVER
 if (process.env.PORT) {
   server.listen(process.env.PORT, () => {
     console.log(`SERVER IS RUNNING ON PORT ${process.env.PORT}`);
   });
 }
+
+app.use(
+  "/api-docs/swagger-ui",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument),
+);
+app.use(
+  cors({
+    credentials: true,
+  }),
+);
+app.use(compression());
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use("/", router());
+app.use(
+  morgan(
+    ":remote-addr :method :url :status :res[content-length] - :response-time ms [:date[clf]]",
+  ),
+);
 
 export default app;
