@@ -1,7 +1,65 @@
 import express from "express";
 import { merge, get } from "lodash";
-
+import jwt from "jsonwebtoken";
 import { getUserBySessionToken } from "../db/user";
+require("dotenv").config();
+
+//CHECK AUTHORIZATION
+export const authenToken = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  try {
+    const authorizationHeader = req.headers["authorization"];
+    if (!authorizationHeader) {
+      return res.status(401).json({
+        is_error: true,
+        error: {
+          code: 401,
+          message: "Unauthorization",
+        },
+      });
+    }
+    const accessToken = authorizationHeader.split(" ")[1];
+    if (!accessToken) {
+      return res.status(401).json({
+        is_error: true,
+        error: {
+          code: 401,
+          message: "Unauthorization",
+        },
+      });
+    }
+    jwt.verify(
+      accessToken,
+      process.env.ACCESS_TOKEN_SECRET_KEY,
+      (err: any, data: any) => {
+        console.log("LOOG", err, data);
+        if (err) {
+          return res.status(403).json({
+            is_error: true,
+            error: {
+              code: 403,
+              message: "Forbidden",
+            },
+          });
+        }
+        next();
+      },
+    );
+    // return next();
+  } catch (error) {
+    console.log(error);
+    return res.status(401).json({
+      is_error: true,
+      error: {
+        code: 401,
+        message: "Error",
+      },
+    });
+  }
+};
 
 //CHECK IF YOU ARE LOGGED IN OR NOT
 export const isAuthenticated = async (
@@ -39,7 +97,7 @@ export const isAuthenticated = async (
     return next();
   } catch (error) {
     console.log(error);
-    return res.status(400).json({
+    return res.status(403).json({
       is_error: true,
       error: {
         code: 403,

@@ -1,13 +1,48 @@
 import express from "express";
-
+import jwt from "jsonwebtoken";
 import { getUserByEmail, createUser } from "../db/user";
-import {
-  authentication,
-  random,
-  getValidDomain,
-  clientHostName,
-} from "../helpers";
+import { authentication, random } from "../helpers";
+require("dotenv").config();
 import { RoleId } from "db/role";
+//GET ACCESS TOKEN
+
+export const getAccessToken = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  const refreshToken = req.body.refreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({
+      is_error: true,
+      error: {
+        code: 401,
+        message: "Not found refreshToken",
+      },
+    });
+  }
+  jwt.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET_KEY,
+    (err: any, user: any) => {
+      if (err) {
+        return res.status(403).json({
+          is_error: true,
+          error: {
+            code: 403,
+            message: "Forbidden",
+          },
+        });
+      }
+      const accessToken = jwt.sign(
+        { id: user.id },
+        process.env.ACCESS_TOKEN_SECRET_KEY,
+        { expiresIn: "24h" },
+      );
+      res.json({ accessToken });
+    },
+  );
+};
+
 // LOGIN
 export const login = async (req: express.Request, res: express.Response) => {
   try {
@@ -73,6 +108,12 @@ export const login = async (req: express.Request, res: express.Response) => {
       });
     }
 
+    //CREATE REFRESH TOKEN
+    const refreshToken = jwt.sign(
+      { id: user._id },
+      process.env.REFRESH_TOKEN_SECRET_KEY,
+    );
+
     // CREATE AND ASSIGN NEW SESSION TOKEN TO USER
     const salt = random();
     user.authentication.sessionToken = authentication(
@@ -87,6 +128,10 @@ export const login = async (req: express.Request, res: express.Response) => {
       domain: "",
       path: "/",
       expires: new Date(Date.now() + 86400000),
+    });
+    res.cookie("refreshToken", refreshToken, {
+      domain: "",
+      path: "/",
     });
     return res
       .status(200)
@@ -140,6 +185,10 @@ export const logout = async (
     // }
 
     res.clearCookie("XAVIA-AUTH", {
+      domain: "",
+      path: "/",
+    });
+    res.clearCookie("refreshToken", {
       domain: "",
       path: "/",
     });
