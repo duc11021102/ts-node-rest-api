@@ -57,13 +57,13 @@ paths:
                         properties:
                           password:
                             type: string
-                            example: 5341fbb2316809cbd9e95cee86bdc10b3abfb0019490b1ae24d6639e8979b988
+                            example: string
                           salt:
                             type: string
-                            example: EZjIlhos49wDiPC9bpSvZ9wPg0Bnjd9H32UP5gOqRTmP0lSfhtAsMoM3vZAmkb68
+                            example: string
                           sessionToken:
                             type: string
-                            example: d9b108c22cbf9e6861b30f16da65653cb6f332cfd1c5dd9747d9ded691b55579
+                            example: string
                   _id:
                     type: string
                     example: 65f68d0e27ca65d411e13bd6

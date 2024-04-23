@@ -15,18 +15,23 @@ import http from "http";
 import mongoose from "mongoose";
 import router from "./router";
 import swaggerUi from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
 import YAML from "yaml";
 import fs from "fs";
 import path from "path";
-var morgan = require("morgan");
+import morgan from "morgan";
+import options from "./utils/config.swagger";
 require("dotenv").config();
+// var morgan = require("morgan");
 //APP
 const app = express();
 //CONVERT YAML FILE
 const file = fs.readFileSync(path.resolve("swagger.yaml"), "utf8");
 const swaggerDocument = YAML.parse(file);
-//SERVE
+//SERVER
 const server = http.createServer(app);
+//SWAGGER JS DOC
+const openapiSpecification = swaggerJSDoc(options);
 
 // CONNECT MONGODB
 if (process.env.MONGO_URL && process.env.MONGO_PASSWORD) {
@@ -45,10 +50,15 @@ if (process.env.PORT) {
   });
 }
 
+// app.use(
+//   "/api-docs/swagger-ui",
+//   swaggerUi.serve,
+//   swaggerUi.setup(swaggerDocument),
+// );
 app.use(
   "/api-docs/swagger-ui",
   swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument),
+  swaggerUi.setup(openapiSpecification),
 );
 app.use(
   cors({

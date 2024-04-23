@@ -35,7 +35,6 @@ export const authenToken = async (
       accessToken,
       process.env.ACCESS_TOKEN_SECRET_KEY,
       (err: any, data: any) => {
-        console.log("LOOG", err, data);
         if (err) {
           return res.status(403).json({
             is_error: true,

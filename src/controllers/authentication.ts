@@ -2,10 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { getUserByEmail, createUser } from "../db/user";
 import { authentication, random } from "../helpers";
-require("dotenv").config();
 import { RoleId } from "db/role";
-//GET ACCESS TOKEN
+require("dotenv").config();
 
+//GET ACCESS TOKEN
 export const getAccessToken = async (
   req: express.Request,
   res: express.Response,
@@ -25,18 +25,18 @@ export const getAccessToken = async (
     process.env.REFRESH_TOKEN_SECRET_KEY,
     (err: any, user: any) => {
       if (err) {
-        return res.status(403).json({
+        return res.status(401).json({
           is_error: true,
           error: {
-            code: 403,
-            message: "Forbidden",
+            code: 401,
+            message: "Login session expired.",
           },
         });
       }
       const accessToken = jwt.sign(
         { id: user.id },
         process.env.ACCESS_TOKEN_SECRET_KEY,
-        { expiresIn: "24h" },
+        { expiresIn: "1h" },
       );
       res.json({ accessToken });
     },
@@ -112,6 +112,7 @@ export const login = async (req: express.Request, res: express.Response) => {
     const refreshToken = jwt.sign(
       { id: user._id },
       process.env.REFRESH_TOKEN_SECRET_KEY,
+      { expiresIn: "24h" },
     );
 
     // CREATE AND ASSIGN NEW SESSION TOKEN TO USER
