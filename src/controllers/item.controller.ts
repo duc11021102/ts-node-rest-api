@@ -6,6 +6,9 @@ import {
   createItem,
   getItemByItemName,
   updateItemById,
+  getItemsByCategoryCode,
+  getItemByInventoryCode,
+  getItemByNameCode,
 } from "../db/item.schema";
 
 export const getAllItemsController = async (
@@ -13,11 +16,19 @@ export const getAllItemsController = async (
   res: express.Response,
 ) => {
   try {
-    const items = await getAllItems();
+    // const { page } = req.query;
+    const result = await getAllItems();
+    // const startIndex = +page * 16;
+    // const items = result.slice(startIndex, startIndex + 16);
+    // return res.status(200).json({
+    //   is_success: true,
+    //   data: items,
+    //   total: items.length,
+    // });
     return res.status(200).json({
       is_success: true,
-      data: items,
-      total: items.length,
+      data: result,
+      total: result.length,
     });
   } catch (error) {
     return res.status(400).json({
@@ -60,14 +71,23 @@ export const createItemController = async (
   try {
     const data = req.body;
 
-    const existingItem = await getItemByItemName(data.itemName);
-
-    if (existingItem) {
+    const existingName = await getItemByItemName(data.itemName);
+    const existingInventory = await getItemByInventoryCode(data.inventoryCode);
+    if (existingName) {
       return res.status(400).json({
         is_error: true,
         error: {
           code: 400,
-          message: "Item already exists",
+          message: "Item name already exists",
+        },
+      });
+    }
+    if (existingInventory) {
+      return res.status(400).json({
+        is_error: true,
+        error: {
+          code: 400,
+          message: "Inventory code already exists",
         },
       });
     }
@@ -110,7 +130,16 @@ export const updateItemByIdController = async (
         },
       });
     }
-    const updatedItem = await updateItemById(id, data);
+    const date = new Date();
+    const updated_At = date.toISOString();
+
+    const updatedItem = await updateItemById(
+      id,
+      { ...data, updated_At },
+      {
+        new: true,
+      },
+    );
     return res
       .status(200)
       .json({
@@ -124,6 +153,70 @@ export const updateItemByIdController = async (
       error: {
         code: 400,
         message: "Cannot update item",
+      },
+    });
+  }
+};
+
+export const getItemsByCategoryCodeController = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  try {
+    const { type, page } = req.query;
+    const code = +type;
+    const result = await getItemsByCategoryCode(code);
+    // const allItems = await getAllItems();
+    if (!result) {
+      return res.status(400).json({
+        is_error: true,
+        error: {
+          code: 400,
+          message: "Cannot get items from db",
+        },
+      });
+    }
+    const startIndex = +page * 16;
+    const items = result.slice(startIndex, startIndex + 16);
+    // return res.status(200).json({
+    //   is_success: true,
+    //   data: items,
+    //   total: allItems.length,
+    // });
+    setTimeout(() => {
+      return res.status(200).json({
+        is_success: true,
+        data: items,
+        total: result.length,
+      });
+    }, 500);
+  } catch (error) {
+    return res.status(400).json({
+      is_error: true,
+      error: {
+        code: 400,
+        message: "Cannot get items",
+      },
+    });
+  }
+};
+export const getDetailItemByNameCode = async (
+  req: express.Request,
+  res: express.Response,
+) => {
+  try {
+    const { nameCode } = req.params;
+    const item = await getItemByNameCode(nameCode);
+    return res.status(200).json({
+      is_success: true,
+      data: item,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      is_error: true,
+      error: {
+        code: 400,
+        message: "Cannot get item",
       },
     });
   }
